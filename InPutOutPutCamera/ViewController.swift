@@ -8,7 +8,8 @@
 
 import UIKit
 import AVFoundation
-
+import MobileCoreServices
+import Photos
 //ジャスチャー
 struct CommonStructure {
     //タップ
@@ -17,49 +18,88 @@ struct CommonStructure {
     static var swipeGestureUP = UISwipeGestureRecognizer()
 }
 
-class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
+class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UIVideoEditorControllerDelegate, UINavigationControllerDelegate {
 
     let aVC = AVCinSideOutSideObject()
     var cameraView = UIImageView()
-    
+    var isRecoding = false
+    var label = UILabel()
+    var firstAsset: AVAsset?
+    var secondAsset: AVAsset?
+    var fileURL: URL?
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        label.frame = CGRect(x: UIScreen.main.bounds.width/2 - 50, y: UIScreen.main.bounds.height/2, width: UIScreen.main.bounds.width, height: 100)
+        label.textColor = .white
         cameraView.frame = view.frame
         view.addSubview(cameraView)
 
         //カメラのメソッドをUIImageViewに付与
         cameraView = aVC.inSideOutSideCameraSet(cameraView: cameraView)
-
+        cameraView.addSubview(label)
         //ジャスチャー
         CommonStructure.tapGesture = UITapGestureRecognizer(target: self,
                                                             action:#selector(tapGesture))
         self.view.addGestureRecognizer( CommonStructure.tapGesture)
         //アップスワイプ
-        CommonStructure.swipeGestureUP = UISwipeGestureRecognizer(target: self, action:#selector(longTappled))
+        CommonStructure.swipeGestureUP = UISwipeGestureRecognizer(target: self, action:#selector(tappled))
         CommonStructure.swipeGestureUP.numberOfTouchesRequired = 1
         CommonStructure.swipeGestureUP.direction = UISwipeGestureRecognizerDirection.up
         self.view.addGestureRecognizer( CommonStructure.swipeGestureUP)
+        
     }
 
     //カメラのinとoutの切り替え
     @objc func tapGesture(sender:UITapGestureRecognizer) {
         cameraView = aVC.inSideOutSideCameraSet(cameraView: cameraView)
+        cameraView.addSubview(label)
     }
 
     //カメラの撮影
-    @objc func longTappled(sender:UILongPressGestureRecognizer) {
-        aVC.cameraAction(captureDelegate: self)
+    @objc func tappled(sender:UILongPressGestureRecognizer) {
+       // aVC.cameraAction(captureDelegate: self)
+        if isRecoding { // 録画終了
+            aVC.stillImageOutput?.stopRecording()
+        } else{
+            self.label.text = "録画開始します"
+            DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1) {
+            self.label.text = ""
+            }
+            //ディレクトリ検索パスのリストを作成します。
+            let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
+            let videDirectory = paths[0] as String
+            let filePath : String? = "\(videDirectory)/temp.mp4"
+            fileURL = URL(fileURLWithPath: filePath!)
+            aVC.stillImageOutput?.startRecording(to: (fileURL as URL?)!, recordingDelegate: self)
+        }
+        isRecoding = !isRecoding
     }
 
-    // フォトライブラリへの保存メソッド
-    func photoOutput(_ output: AVCapturePhotoOutput,
-                     didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-
-        let photoData = photo.fileDataRepresentation()
-        guard photoData != nil else { return }
-        // フォトライブラリに保存
-        UIImageWriteToSavedPhotosAlbum(UIImage(data: photoData!)!, nil, nil, nil)
+    //保留中のすべてのデータが出力ファイルに書き込まれたときに、デリゲートに通知します。
+    func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: outputFileURL)
+        }) { completed, error in
+            if completed {
+                DispatchQueue.main.sync {
+                    self.label.text = "録画しました"
+                }
+                DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1) {
+                    self.label.text = ""
+                }
+                let avAsset = AVAsset(url: self.fileURL!)
+                self.firstAsset = avAsset
+              
+                if UIVideoEditorController.canEditVideo(atPath: (self.fileURL?.path)!) {
+                    let editController = UIVideoEditorController()
+                    editController.videoPath = (self.fileURL?.path)!
+                    editController.videoQuality = .typeIFrame1280x720
+                    editController.delegate = self
+                    self.present(editController, animated: true)
+                }
+            }
+        }
     }
 
 }
@@ -69,7 +109,7 @@ class AVCinSideOutSideObject: NSObject {
 
     //キャプチャセッションに入力（オーディオやビデオなど）を提供し、ハードウェア固有のキャプチャ機能のコントロールを提供するデバイス。
     var captureDevice  = AVCaptureDevice.default(for: .video)
-    var stillImageOutput: AVCapturePhotoOutput? //静止画、ライブ写真、その他の写真ワークフローの出力をキャプチャします。
+    var stillImageOutput: AVCaptureMovieFileOutput?//静止画、ライブ写真、その他の写真ワークフローの出力をキャプチャします。
 
 
     func cameraWithPosition(_ position: AVCaptureDevice.Position) -> AVCaptureDevice? {
@@ -91,7 +131,7 @@ class AVCinSideOutSideObject: NSObject {
 
         //キャプチャデバイスからキャプチャセッションにメディアを提供するキャプチャ入力。
         var input: AVCaptureDeviceInput!
-        stillImageOutput = AVCapturePhotoOutput()
+        stillImageOutput = AVCaptureMovieFileOutput()
         // キャプチャアクティビティを管理し、入力デバイスからキャプチャ出力へのデータフローを調整するオブジェクト。
         let captureSesion = AVCaptureSession()
         // 解像度の設定
@@ -146,18 +186,5 @@ class AVCinSideOutSideObject: NSObject {
 
         }
         return cameraView
-    }
-
-    //シャッターを撮影するメソッド
-    func cameraAction (captureDelegate:AVCapturePhotoCaptureDelegate) {
-        // フラッシュとかカメラの設定
-        let settingsForMonitoring = AVCapturePhotoSettings()
-        settingsForMonitoring.flashMode = .auto
-        // キャプチャが自動イメージ安定化を使用するかどうかを指定するブール値。
-        settingsForMonitoring.isAutoStillImageStabilizationEnabled = true
-        // アクティブなデバイスでサポートされている最高解像度で静止画像をキャプチャするかどうかを指定するブール値。
-        settingsForMonitoring.isHighResolutionPhotoEnabled = false
-        // 撮影
-        stillImageOutput?.capturePhoto(with: settingsForMonitoring, delegate: captureDelegate)
     }
 }
