@@ -18,7 +18,7 @@ struct CommonStructure {
     static var swipeGestureUP = UISwipeGestureRecognizer()
 }
 
-class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UIVideoEditorControllerDelegate, UINavigationControllerDelegate {
+class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UINavigationControllerDelegate {
 
     let aVC = AVCinSideOutSideObject()
     var cameraView = UIImageView()
@@ -86,6 +86,7 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
                 DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1) {
                     self.label.text = ""
                 }
+                
                 if UIVideoEditorController.canEditVideo(atPath: (self.fileURL?.path)!) {
                     let editController = UIVideoEditorController()
                     editController.videoPath = (self.fileURL?.path)!
@@ -99,6 +100,31 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
 
 }
 
+extension ViewController: UIVideoEditorControllerDelegate, UIImagePickerControllerDelegate {
+    func videoEditorController(_ editor: UIVideoEditorController,
+                               didSaveEditedVideoToPath editedVideoPath: String) {
+        
+        dismiss(animated:true)
+        if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) {
+            
+            let pickerView = UIImagePickerController()
+            pickerView.mediaTypes = [kUTTypeMovie as String]
+            pickerView.delegate = self
+            
+            self.present(pickerView, animated: true)
+        }
+
+    }
+    
+    func videoEditorControllerDidCancel(_ editor: UIVideoEditorController) {
+        dismiss(animated:true)
+    }
+    
+    func videoEditorController(_ editor: UIVideoEditorController,
+                               didFailWithError error: Error) {
+        dismiss(animated:true)
+    }
+}
 
 class AVCinSideOutSideObject: NSObject {
 
