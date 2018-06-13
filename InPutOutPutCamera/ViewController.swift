@@ -24,8 +24,6 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
     var cameraView = UIImageView()
     var isRecoding = false
     var label = UILabel()
-    var firstAsset: AVAsset?
-    var secondAsset: AVAsset?
     var fileURL: URL?
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -88,9 +86,6 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
                 DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1) {
                     self.label.text = ""
                 }
-                let avAsset = AVAsset(url: self.fileURL!)
-                self.firstAsset = avAsset
-              
                 if UIVideoEditorController.canEditVideo(atPath: (self.fileURL?.path)!) {
                     let editController = UIVideoEditorController()
                     editController.videoPath = (self.fileURL?.path)!
