@@ -9,71 +9,116 @@
 import UIKit
 import AVFoundation
 import MobileCoreServices
+import MediaPlayer
 import Photos
+import AVKit
 //ジャスチャー
 struct CommonStructure {
     //タップ
     static var tapGesture = UITapGestureRecognizer()
-    //スワイプ
+    //上スワイプ
     static var swipeGestureUP = UISwipeGestureRecognizer()
+    //下スワイプ
+    static var swipeGestureDown = UISwipeGestureRecognizer()
+    //右スワイプ
+    static var swipeGestureRight = UISwipeGestureRecognizer()
+    //左スワイプ
+    static var swipeGestureLeft = UISwipeGestureRecognizer()
 }
 
-class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UINavigationControllerDelegate {
-
+class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
     let aVC = AVCinSideOutSideObject()
     var cameraView = UIImageView()
     var isRecoding = false
     var label = UILabel()
     var fileURL: URL?
+    var defo = UserDefaultsFile()
+    var pic = UIImagePickerController()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         label.frame = CGRect(x: UIScreen.main.bounds.width/2 - 50, y: UIScreen.main.bounds.height/2, width: UIScreen.main.bounds.width, height: 100)
         label.textColor = .white
         cameraView.frame = view.frame
         view.addSubview(cameraView)
-
+        
         //カメラのメソッドをUIImageViewに付与
         cameraView = aVC.inSideOutSideCameraSet(cameraView: cameraView)
         cameraView.addSubview(label)
-        //ジャスチャー
-        CommonStructure.tapGesture = UITapGestureRecognizer(target: self,
-                                                            action:#selector(tapGesture))
+        //タップジャスチャー
+        CommonStructure.tapGesture = UITapGestureRecognizer(target: self,action:#selector(tapGesture))
         self.view.addGestureRecognizer( CommonStructure.tapGesture)
         //アップスワイプ
-        CommonStructure.swipeGestureUP = UISwipeGestureRecognizer(target: self, action:#selector(tappled))
+        CommonStructure.swipeGestureUP = UISwipeGestureRecognizer(target: self, action:#selector(upSwipe))
         CommonStructure.swipeGestureUP.numberOfTouchesRequired = 1
         CommonStructure.swipeGestureUP.direction = UISwipeGestureRecognizerDirection.up
         self.view.addGestureRecognizer( CommonStructure.swipeGestureUP)
+        //ダウンスワイプ
+        CommonStructure.swipeGestureDown = UISwipeGestureRecognizer(target: self, action:#selector(downSwipe))
+        CommonStructure.swipeGestureDown.numberOfTouchesRequired = 1
+        CommonStructure.swipeGestureDown.direction = UISwipeGestureRecognizerDirection.down
+        self.view.addGestureRecognizer( CommonStructure.swipeGestureDown)
+        //右スワイプ
+        CommonStructure.swipeGestureRight = UISwipeGestureRecognizer(target: self, action:#selector(photeSegue))
+        CommonStructure.swipeGestureRight.numberOfTouchesRequired = 1
+        CommonStructure.swipeGestureRight.direction = UISwipeGestureRecognizerDirection.right
+        self.view.addGestureRecognizer( CommonStructure.swipeGestureRight)
+        //左スワイプ
+        CommonStructure.swipeGestureLeft = UISwipeGestureRecognizer(target: self, action:#selector(photeReset))
+        CommonStructure.swipeGestureLeft.numberOfTouchesRequired = 1
+        CommonStructure.swipeGestureLeft.direction = UISwipeGestureRecognizerDirection.left
+        self.view.addGestureRecognizer( CommonStructure.swipeGestureLeft)
         
     }
-
     //カメラのinとoutの切り替え
     @objc func tapGesture(sender:UITapGestureRecognizer) {
         cameraView = aVC.inSideOutSideCameraSet(cameraView: cameraView)
         cameraView.addSubview(label)
     }
-
     //カメラの撮影
-    @objc func tappled(sender:UILongPressGestureRecognizer) {
-       // aVC.cameraAction(captureDelegate: self)
+    @objc func upSwipe(sender:UILongPressGestureRecognizer) {
+        // aVC.cameraAction(captureDelegate: self)
         if isRecoding { // 録画終了
             aVC.stillImageOutput?.stopRecording()
         } else{
             self.label.text = "録画開始します"
             DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1) {
-            self.label.text = ""
+                self.label.text = ""
             }
             //ディレクトリ検索パスのリストを作成します。
-            let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-            let videDirectory = paths[0] as String
-            let filePath : String? = "\(videDirectory)/temp.mp4"
-            fileURL = URL(fileURLWithPath: filePath!)
+            guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateStyle = .long
+            dateFormatter.timeStyle = .short
+            let date = dateFormatter.string(from: Date())
+            let num = arc4random() % 100000000
+            let url = documentDirectory.appendingPathComponent(num.description + "\(date)temp.mp4")
+            fileURL = url
             aVC.stillImageOutput?.startRecording(to: (fileURL as URL?)!, recordingDelegate: self)
         }
         isRecoding = !isRecoding
     }
+    //動画の結合
+    @objc func downSwipe(sender:UITapGestureRecognizer) { funcMerge() }
 
+    //カメラロールに遷移
+    @objc func photeSegue() {
+            if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
+                
+                let pickerView = UIImagePickerController()
+                pickerView.mediaTypes = [kUTTypeMovie as String]
+                pickerView.allowsEditing = true
+                pickerView.delegate = self
+                self.present(pickerView, animated: true)
+        }
+    }
+
+    @objc func photeReset() {
+        defo.removeMethod(st:"pathFileNameOne")
+        defo.removeMethod(st:"pathFileNameSecound")
+    }
     //保留中のすべてのデータが出力ファイルに書き込まれたときに、デリゲートに通知します。
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
         PHPhotoLibrary.shared().performChanges({
@@ -86,60 +131,56 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
                 DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1) {
                     self.label.text = ""
                 }
-                
-                if UIVideoEditorController.canEditVideo(atPath: (self.fileURL?.path)!) {
-                    let editController = UIVideoEditorController()
-                    editController.videoPath = (self.fileURL?.path)!
-                    editController.videoQuality = .typeIFrame1280x720
-                    editController.delegate = self
-                    self.present(editController, animated: true)
-                }
             }
-        }
-    }
-
-}
-
-extension ViewController: UIVideoEditorControllerDelegate, UIImagePickerControllerDelegate {
-    func videoEditorController(_ editor: UIVideoEditorController,
-                               didSaveEditedVideoToPath editedVideoPath: String) {
-        
-        dismiss(animated:true)
-        if UIImagePickerController.isSourceTypeAvailable(.savedPhotosAlbum) {
-            
             let pickerView = UIImagePickerController()
             pickerView.mediaTypes = [kUTTypeMovie as String]
+            pickerView.allowsEditing = true
             pickerView.delegate = self
-            
             self.present(pickerView, animated: true)
+            
         }
 
     }
     
-    func videoEditorControllerDidCancel(_ editor: UIVideoEditorController) {
-        dismiss(animated:true)
+    func funcMerge() {
+            guard let urlOne = self.defo.loadMethod(st: "pathFileNameOne") else { return }
+//            guard let urlSecound = self.defo.loadMethod(st: "pathFileNameSecound") else { return }
+            print(urlOne)
+            let avAsset = AVAsset(url: urlOne)
+            if avAsset.duration != kCMTimeZero {
+//            let avAssetSecound = AVAsset(url: urlSecound)
+            let mutableComposition = MutableComposition(vc: self)
+            mutableComposition.aVAsset(aVAsset: avAsset, views: self)
+        }
     }
     
-    func videoEditorController(_ editor: UIVideoEditorController,
-                               didFailWithError error: Error) {
-        dismiss(animated:true)
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        
+        guard let mediaType = info[UIImagePickerControllerMediaType] as? String,
+            mediaType == (kUTTypeMovie as String),
+            let url = info[UIImagePickerControllerMediaURL] as? URL else { return }
+        dismiss(animated: true) {
+            self.defo.saveMethod(url:url, picker: picker)
+            self.funcMerge()
+        }
     }
 }
+    
 
-class AVCinSideOutSideObject: NSObject {
-
+    class AVCinSideOutSideObject: NSObject {
+    
     //キャプチャセッションに入力（オーディオやビデオなど）を提供し、ハードウェア固有のキャプチャ機能のコントロールを提供するデバイス。
     var captureDevice  = AVCaptureDevice.default(for: .video)
     var stillImageOutput: AVCaptureMovieFileOutput?//静止画、ライブ写真、その他の写真ワークフローの出力をキャプチャします。
-
-
+    
+    
     func cameraWithPosition(_ position: AVCaptureDevice.Position) -> AVCaptureDevice? {
         let deviceDescoverySession =
-
+            
             AVCaptureDevice.DiscoverySession.init(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera],
                                                   mediaType: AVMediaType.video,
                                                   position: AVCaptureDevice.Position.unspecified)
-
+        
         for device in deviceDescoverySession.devices {
             if device.position == position {
                 return device
@@ -147,9 +188,9 @@ class AVCinSideOutSideObject: NSObject {
         }
         return nil
     }
-
+    
     func inSideOutSideCameraSet(cameraView: UIImageView ) -> UIImageView {
-
+        
         //キャプチャデバイスからキャプチャセッションにメディアを提供するキャプチャ入力。
         var input: AVCaptureDeviceInput!
         stillImageOutput = AVCaptureMovieFileOutput()
@@ -164,7 +205,7 @@ class AVCinSideOutSideObject: NSObject {
             //一連の構成変更をコミットします。
             captureSesion.commitConfiguration()
         }
-
+        
         if captureDevice?.position == .front {
             UIView.transition(with: cameraView, duration: 0.5, options: .transitionFlipFromLeft, animations: {
                 self.captureDevice = self.cameraWithPosition(.back)!
@@ -174,7 +215,7 @@ class AVCinSideOutSideObject: NSObject {
                 self.captureDevice = self.cameraWithPosition(.front)!
             }, completion: nil)
         }
-
+        
         var deviceInput: AVCaptureDeviceInput!
         do {
             input = try AVCaptureDeviceInput(device: captureDevice!)
@@ -188,7 +229,7 @@ class AVCinSideOutSideObject: NSObject {
                     captureSesion.addOutput(stillImageOutput!)
                     // カメラ起動
                     captureSesion.startRunning()
-
+                    
                     //キャプチャされているときにビデオを表示できるコアアニメーションレイヤ-
                     var previewLayer: AVCaptureVideoPreviewLayer?
                     //キャプチャされているときにビデオを表示できるコアアニメーションレイヤ-
@@ -204,8 +245,86 @@ class AVCinSideOutSideObject: NSObject {
             }
         } catch {
             print(error)
-
+            
         }
         return cameraView
     }
+}
+
+extension ViewController: UIVideoEditorControllerDelegate {
+    func videoEditorController(_ editor: UIVideoEditorController,
+                               didSaveEditedVideoToPath editedVideoPath: String) {
+        dismiss(animated: true)
+    }
+
+    func videoEditorControllerDidCancel(_ editor: UIVideoEditorController) {
+        dismiss(animated:true)
+    }
+
+    func videoEditorController(_ editor: UIVideoEditorController,
+                               didFailWithError error: Error) {
+        dismiss(animated:true)
+    }
+}
+
+//https://www.raywenderlich.com/188034/how-to-play-record-and-merge-videos-in-ios-and-swift
+class VideoHelper {
+    
+    static func startMediaBrowser(delegate: UIViewController & UINavigationControllerDelegate & UIImagePickerControllerDelegate, sourceType: UIImagePickerControllerSourceType) {
+        guard UIImagePickerController.isSourceTypeAvailable(sourceType) else { return }
+        
+        let mediaUI = UIImagePickerController()
+        mediaUI.sourceType = sourceType
+        mediaUI.mediaTypes = [kUTTypeMovie as String]
+        mediaUI.allowsEditing = true
+        mediaUI.delegate = delegate
+        delegate.present(mediaUI, animated: true, completion: nil)
+    }
+    
+    static func orientationFromTransform(_ transform: CGAffineTransform) -> (orientation: UIImageOrientation, isPortrait: Bool) {
+        var assetOrientation = UIImageOrientation.up
+        var isPortrait = false
+        if transform.a == 0 && transform.b == 1.0 && transform.c == -1.0 && transform.d == 0 {
+            assetOrientation = .right
+            isPortrait = true
+        } else if transform.a == 0 && transform.b == -1.0 && transform.c == 1.0 && transform.d == 0 {
+            assetOrientation = .left
+            isPortrait = true
+        } else if transform.a == 1.0 && transform.b == 0 && transform.c == 0 && transform.d == 1.0 {
+            assetOrientation = .up
+        } else if transform.a == -1.0 && transform.b == 0 && transform.c == 0 && transform.d == -1.0 {
+            assetOrientation = .down
+        }
+        return (assetOrientation, isPortrait)
+    }
+    
+    static func videoCompositionInstruction(_ track: AVCompositionTrack, asset: AVAsset) -> AVMutableVideoCompositionLayerInstruction {
+        let instruction = AVMutableVideoCompositionLayerInstruction(assetTrack: track)
+        let assetTrack = asset.tracks(withMediaType: AVMediaType.video)[0]
+        
+        let transform = assetTrack.preferredTransform
+        let assetInfo = orientationFromTransform(transform)
+        
+        var scaleToFitRatio = UIScreen.main.bounds.width / assetTrack.naturalSize.width
+        if assetInfo.isPortrait {
+            scaleToFitRatio = UIScreen.main.bounds.width / assetTrack.naturalSize.height
+            let scaleFactor = CGAffineTransform(scaleX: scaleToFitRatio, y: scaleToFitRatio)
+            instruction.setTransform(assetTrack.preferredTransform.concatenating(scaleFactor), at: kCMTimeZero)
+        } else {
+            let scaleFactor = CGAffineTransform(scaleX: scaleToFitRatio, y: scaleToFitRatio)
+            var concat = assetTrack.preferredTransform.concatenating(scaleFactor)
+                .concatenating(CGAffineTransform(translationX: 0, y: UIScreen.main.bounds.width / 2))
+            if assetInfo.orientation == .down {
+                let fixUpsideDown = CGAffineTransform(rotationAngle: CGFloat(Double.pi))
+                let windowBounds = UIScreen.main.bounds
+                let yFix = assetTrack.naturalSize.height + windowBounds.height
+                let centerFix = CGAffineTransform(translationX: assetTrack.naturalSize.width, y: yFix)
+                concat = fixUpsideDown.concatenating(centerFix).concatenating(scaleFactor)
+            }
+            instruction.setTransform(concat, at: kCMTimeZero)
+        }
+        
+        return instruction
+    }
+    
 }

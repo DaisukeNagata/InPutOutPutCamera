@@ -14,6 +14,8 @@
 		BB40946520B02ECD00484A4E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BB40946320B02ECD00484A4E /* LaunchScreen.storyboard */; };
 		BB40947020B02ECD00484A4E /* InPutOutPutCameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB40946F20B02ECD00484A4E /* InPutOutPutCameraTests.swift */; };
 		BB40947B20B02ECD00484A4E /* InPutOutPutCameraUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB40947A20B02ECD00484A4E /* InPutOutPutCameraUITests.swift */; };
+		BBA9ECEF20D309AA0008C27D /* UserDefaultsFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA9ECEE20D309AA0008C27D /* UserDefaultsFile.swift */; };
+		BBA9ECF120D30FE70008C27D /* MutableComposition.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBA9ECF020D30FE70008C27D /* MutableComposition.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,8 @@
 		BB40947620B02ECD00484A4E /* InPutOutPutCameraUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = InPutOutPutCameraUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BB40947A20B02ECD00484A4E /* InPutOutPutCameraUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InPutOutPutCameraUITests.swift; sourceTree = "<group>"; };
 		BB40947C20B02ECD00484A4E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BBA9ECEE20D309AA0008C27D /* UserDefaultsFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsFile.swift; sourceTree = "<group>"; };
+		BBA9ECF020D30FE70008C27D /* MutableComposition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MutableComposition.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +103,8 @@
 			children = (
 				BB40945A20B02ECC00484A4E /* AppDelegate.swift */,
 				BB40945C20B02ECC00484A4E /* ViewController.swift */,
+				BBA9ECEE20D309AA0008C27D /* UserDefaultsFile.swift */,
+				BBA9ECF020D30FE70008C27D /* MutableComposition.swift */,
 				BB40945E20B02ECC00484A4E /* Main.storyboard */,
 				BB40946120B02ECD00484A4E /* Assets.xcassets */,
 				BB40946320B02ECD00484A4E /* LaunchScreen.storyboard */,
@@ -256,6 +262,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BBA9ECEF20D309AA0008C27D /* UserDefaultsFile.swift in Sources */,
+				BBA9ECF120D30FE70008C27D /* MutableComposition.swift in Sources */,
 				BB40945D20B02ECC00484A4E /* ViewController.swift in Sources */,
 				BB40945B20B02ECC00484A4E /* AppDelegate.swift in Sources */,
 			);
