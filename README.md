@@ -1,7 +1,7 @@
 # InPutOutPutCamera
 
 Qiitaに挙動を投稿
-https://qiita.com/daisukenagata/items/ede33f8afa8c32832061
+https://qiita.com/daisukenagata/items/bf5e86b1c33ee2f5cc53
 
 # InPutOutPutVideoCamera
 
