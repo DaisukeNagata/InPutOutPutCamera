@@ -104,12 +104,10 @@ class MutableComposition: NSObject, UINavigationControllerDelegate {
         
         let saveVideoToPhotos = {
             PHPhotoLibrary.shared().performChanges({ PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: outputURL) }) { saved, error in
-                if UIVideoEditorController.canEditVideo(atPath: url.path) {
-                    views.pic.mediaTypes = [kUTTypeMovie as String]
-                    views.pic.allowsEditing = true
-                    views.pic.delegate = views
-                    views.present(views.pic, animated: true)
-                }
+                views.pic.mediaTypes = [kUTTypeMovie as String]
+                views.pic.allowsEditing = true
+                views.pic.delegate = views
+                views.present(views.pic, animated: true)
             }
         }
         if PHPhotoLibrary.authorizationStatus() != .authorized {
