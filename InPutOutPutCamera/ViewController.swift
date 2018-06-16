@@ -39,7 +39,8 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        label.frame = CGRect(x: UIScreen.main.bounds.width/2 - 50, y: UIScreen.main.bounds.height/2, width: UIScreen.main.bounds.width, height: 100)
+        label.frame = CGRect(x: 0, y: UIScreen.main.bounds.height/2, width: UIScreen.main.bounds.width, height: 100)
+        label.textAlignment = .center
         label.textColor = .white
         cameraView.frame = view.frame
         view.addSubview(cameraView)
@@ -101,23 +102,27 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
         isRecoding = !isRecoding
     }
     //動画の結合
-    @objc func downSwipe(sender:UITapGestureRecognizer) { funcMerge() }
+    @objc func downSwipe(sender:UITapGestureRecognizer) { mergeMethod() }
 
     //カメラロールに遷移
     @objc func photeSegue() {
             if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) {
                 
-                let pickerView = UIImagePickerController()
-                pickerView.mediaTypes = [kUTTypeMovie as String]
-                pickerView.allowsEditing = true
-                pickerView.delegate = self
-                self.present(pickerView, animated: true)
+                self.pic.mediaTypes = [kUTTypeMovie as String]
+                self.pic.allowsEditing = true
+                self.pic.delegate = self
+                self.present(self.pic, animated: true)
         }
     }
 
     @objc func photeReset() {
         defo.removeMethod(st:"pathFileNameOne")
         defo.removeMethod(st:"pathFileNameSecound")
+        
+        self.label.text = "リセット"
+        DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1) {
+            self.label.text = ""
+        }
     }
     //保留中のすべてのデータが出力ファイルに書き込まれたときに、デリゲートに通知します。
     func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
@@ -137,23 +142,10 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
             pickerView.allowsEditing = true
             pickerView.delegate = self
             self.present(pickerView, animated: true)
-            
         }
 
     }
-    
-    func funcMerge() {
-            guard let urlOne = self.defo.loadMethod(st: "pathFileNameOne") else { return }
-//            guard let urlSecound = self.defo.loadMethod(st: "pathFileNameSecound") else { return }
-            print(urlOne)
-            let avAsset = AVAsset(url: urlOne)
-            if avAsset.duration != kCMTimeZero {
-//            let avAssetSecound = AVAsset(url: urlSecound)
-            let mutableComposition = MutableComposition(vc: self)
-            mutableComposition.aVAsset(aVAsset: avAsset, views: self)
-        }
-    }
-    
+
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
         guard let mediaType = info[UIImagePickerControllerMediaType] as? String,
@@ -161,13 +153,42 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
             let url = info[UIImagePickerControllerMediaURL] as? URL else { return }
         dismiss(animated: true) {
             self.defo.saveMethod(url:url, picker: picker)
-            self.funcMerge()
         }
     }
+    
+    func mergeMethod() {
+        guard let urlOne = self.defo.loadMethod(st: "pathFileNameOne") else {
+            self.label.text = "編集データがありません"
+            DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1) {
+                self.label.text = ""
+            }
+            return
+        }
+        guard let urlSecound = self.defo.loadMethod(st: "pathFileNameSecound") else {
+            self.label.text = "２つ目の編集データがありません"
+            DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1) {
+                self.label.text = ""
+            }
+            return
+        }
+
+        let avAsset = AVAsset(url: urlOne)
+        let avAssetSecound = AVAsset(url: urlSecound)
+        if avAsset.duration != kCMTimeZero && avAssetSecound.duration != kCMTimeZero {
+        let mutableComposition = MutableComposition(vc: self)
+            mutableComposition.aVAssetMerge(aVAsset: avAsset, aVAssetSecound: avAssetSecound, views: self)
+        } else {
+            self.label.text = "左スワイプでリセットしてください"
+            DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1) {
+                self.label.text = ""
+            }
+        }
+    }
+
 }
     
 
-    class AVCinSideOutSideObject: NSObject {
+class AVCinSideOutSideObject: NSObject {
     
     //キャプチャセッションに入力（オーディオやビデオなど）を提供し、ハードウェア固有のキャプチャ機能のコントロールを提供するデバイス。
     var captureDevice  = AVCaptureDevice.default(for: .video)
@@ -248,22 +269,6 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
             
         }
         return cameraView
-    }
-}
-
-extension ViewController: UIVideoEditorControllerDelegate {
-    func videoEditorController(_ editor: UIVideoEditorController,
-                               didSaveEditedVideoToPath editedVideoPath: String) {
-        dismiss(animated: true)
-    }
-
-    func videoEditorControllerDidCancel(_ editor: UIVideoEditorController) {
-        dismiss(animated:true)
-    }
-
-    func videoEditorController(_ editor: UIVideoEditorController,
-                               didFailWithError error: Error) {
-        dismiss(animated:true)
     }
 }
 
