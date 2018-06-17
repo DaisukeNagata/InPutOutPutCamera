@@ -69,14 +69,14 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
             self.label.text = "録画開始します"
             DispatchQueue.main.asyncAfter(wallDeadline: .now() + 1) {
                 self.label.text = ""
-                self.pickerView.get(callBackClosure: self.setView)
+                self.pickerView.get(callBackClosure: self.setIndex)
             }
         }
         isRecoding = !isRecoding
     }
 
     //フレームレートの設定
-    func setView() {
+    func setIndex() {
         cameraView = aVC.inSideOutSideCameraSet(cameraView: cameraView, timeDuration: Int32(pickerView.indexList))
         //ディレクトリ検索パスのリストを作成します。
         guard let documentDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
