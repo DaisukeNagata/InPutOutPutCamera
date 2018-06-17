@@ -8,8 +8,6 @@
 
 import UIKit
 
-
-
 class PickerView:UIPickerView, UIPickerViewDelegate, UIPickerViewDataSource {
 
     var list = [3,4,5,10,15,20,25,30]
