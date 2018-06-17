@@ -1,10 +1,17 @@
 # FrameRateVideoCamera
+### 操作方法
+1.ピッカーで値を選択
 
-### フレームレートの値を変更して動画を撮影しています。
+2.上スワイプで撮影を開始
+
+#### フレームレート数が少ないとコマ送りの挙動になります。
+
+## フレームレートの値を変更して動画を撮影しています。
 
 pickerView.indexList の値をViewControllerから撮影時に、timeDurationの変数に付与しています。
 
 pickerView.indexList の値は、UIPickerViewクラスでPickerの操作時の値を付与しています。
+
 ```ruby
 Class ViewController
 cameraView = aVC.inSideOutSideCameraSet(cameraView: cameraView, timeDuration: Int32(pickerView.indexList))
