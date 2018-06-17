@@ -14,14 +14,7 @@ import Photos
 class MutableComposition: NSObject, UINavigationControllerDelegate {
 
     let mixComposition = AVMutableComposition()
-    var uiView: UIViewController
 
-
-    init(vc: UIViewController) {
-        uiView = vc
-       super.init()
-    }
-    
 
     //https://www.raywenderlich.com/188034/how-to-play-record-and-merge-videos-in-ios-and-swift  ---->
     func aVAssetMerge(aVAsset: AVAsset,
