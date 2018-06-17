@@ -175,7 +175,7 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
         let avAsset = AVAsset(url: urlOne)
         let avAssetSecound = AVAsset(url: urlSecound)
         if avAsset.duration != kCMTimeZero && avAssetSecound.duration != kCMTimeZero {
-        let mutableComposition = MutableComposition(vc: self)
+        let mutableComposition = MutableComposition()
             mutableComposition.aVAssetMerge(aVAsset: avAsset, aVAssetSecound: avAssetSecound, views: self)
         } else {
             self.label.text = "左スワイプでリセットしてください"
