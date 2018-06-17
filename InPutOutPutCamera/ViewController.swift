@@ -120,7 +120,6 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
             pickerView.delegate = self
             self.present(pickerView, animated: true)
         }
-        
     }
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
@@ -134,13 +133,10 @@ class ViewController: UIViewController, AVCaptureFileOutputRecordingDelegate, UI
 
 }
 
-
 class AVCinSideOutSideObject: NSObject {
-
     //キャプチャセッションに入力（オーディオやビデオなど）を提供し、ハードウェア固有のキャプチャ機能のコントロールを提供するデバイス。
     var captureDevice  = AVCaptureDevice.default(for: .video)
     var stillImageOutput: AVCaptureMovieFileOutput? //静止画、ライブ写真、その他の写真ワークフローの出力をキャプチャします。
-
 
     func cameraWithPosition(_ position: AVCaptureDevice.Position) -> AVCaptureDevice? {
         let deviceDescoverySession =
@@ -202,5 +198,4 @@ class AVCinSideOutSideObject: NSObject {
         }
         return cameraView
     }
-
 }
