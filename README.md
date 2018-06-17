@@ -38,4 +38,6 @@ Class AVCinSideOutSideObject
     }
   func get(callBackClosure:@escaping () -> Void) -> Void { callBackClosure() }
  ```
+ クリックをするとフレームレート数を変更した際の挙動動画にジャンプします。
+ 
 [![](https://github.com/daisukenagata/InPutOutPutCamera/blob/FrameRateSetVideoCamera/スクリーンショット%202018-06-17%2017.39.43.png?raw=true)](https://youtu.be/LmYCyR-JW34)
