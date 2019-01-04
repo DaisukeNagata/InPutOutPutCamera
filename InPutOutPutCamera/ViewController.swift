@@ -36,9 +36,9 @@ class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
                                                             action:#selector(tapGesture))
         self.view.addGestureRecognizer( CommonStructure.tapGesture)
         //アップスワイプ
-        CommonStructure.swipeGestureUP = UISwipeGestureRecognizer(target: self, action:#selector(longTappled))
+        CommonStructure.swipeGestureUP = UISwipeGestureRecognizer(target: self, action:#selector(upTappled))
         CommonStructure.swipeGestureUP.numberOfTouchesRequired = 1
-        CommonStructure.swipeGestureUP.direction = UISwipeGestureRecognizerDirection.up
+        CommonStructure.swipeGestureUP.direction = UISwipeGestureRecognizer.Direction.up
         self.view.addGestureRecognizer( CommonStructure.swipeGestureUP)
     }
 
@@ -48,7 +48,7 @@ class ViewController: UIViewController, AVCapturePhotoCaptureDelegate {
     }
 
     //カメラの撮影
-    @objc func longTappled(sender:UILongPressGestureRecognizer) {
+    @objc func upTappled(sender:UISwipeGestureRecognizer) {
         aVC.cameraAction(captureDelegate: self)
     }
 
