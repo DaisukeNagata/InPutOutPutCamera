@@ -193,16 +193,16 @@
 				TargetAttributes = {
 					BB40945620B02ECC00484A4E = {
 						CreatedOnToolsVersion = 9.3.1;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1100;
 					};
 					BB40946A20B02ECD00484A4E = {
 						CreatedOnToolsVersion = 9.3.1;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1100;
 						TestTargetID = BB40945620B02ECC00484A4E;
 					};
 					BB40947520B02ECD00484A4E = {
 						CreatedOnToolsVersion = 9.3.1;
-						LastSwiftMigration = 1010;
+						LastSwiftMigration = 1100;
 						TestTargetID = BB40945620B02ECC00484A4E;
 					};
 				};
@@ -433,8 +433,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = InPutOutPutCamera/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -444,7 +444,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = RsaDbnak.InPutOutPutCamera;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -453,8 +453,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = InPutOutPutCamera/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -464,7 +464,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = RsaDbnak.InPutOutPutCamera;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -484,7 +484,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = RsaDbnak.InPutOutPutCameraTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/InPutOutPutCamera.app/InPutOutPutCamera";
 			};
@@ -505,7 +505,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = RsaDbnak.InPutOutPutCameraTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/InPutOutPutCamera.app/InPutOutPutCamera";
 			};
@@ -525,7 +525,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = RsaDbnak.InPutOutPutCameraUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = InPutOutPutCamera;
 			};
@@ -545,7 +545,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = RsaDbnak.InPutOutPutCameraUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = InPutOutPutCamera;
 			};
